@@ -64,7 +64,7 @@ section{padding-top:56px;scroll-margin-top:60px}
 .r span{font-size:.82rem;color:var(--abu);line-height:1.3;display:block;margin-top:2px}
 /* cake custom */
 .gal{display:flex;gap:10px;overflow-x:auto;padding:6px 0 14px}
-.gal img{height:150px;width:auto;flex:none;filter:drop-shadow(0 8px 7px #0003)}
+.gal img{height:150px;width:auto;min-height:150px;flex:none;filter:drop-shadow(0 8px 7px #0003)}
 details{border:1px solid var(--garis);border-radius:16px;padding:4px 16px;margin-bottom:10px;background:#fff}
 summary{font-family:var(--display);font-weight:500;font-size:1.15rem;padding:10px 0;cursor:pointer}
 details .var{border-top:1px dashed var(--garis)}details .var:first-of-type{margin-top:0}
@@ -87,8 +87,32 @@ label{display:block;font-weight:500;font-size:.92rem;margin-top:10px}
 #laci input,#laci textarea{width:100%;padding:11px;margin-top:4px;border:1px solid #aab4ac;border-radius:8px;background:#fff}
 #kirim{width:100%;margin-top:16px;background:var(--pandan);color:#fff;border:0;border-radius:999px;padding:13px;font-weight:700}
 #tutup{width:100%;margin-top:6px;background:none;border:0;padding:10px;color:var(--abu)}
+/* micro-interaction: tombol */
+.tambah,.bar button,#bilah button,#kirim,.step button{transition:transform .15s,background-color .2s,box-shadow .2s}
+.tambah:hover,#kirim:hover{transform:translateY(-2px);box-shadow:0 6px 14px #24493a40}
+.bar button:hover,#bilah button:hover{transform:translateY(-1px);box-shadow:0 5px 12px #0003}
+.tambah:active,.bar button:active,#bilah button:active,#kirim:active,.step button:active{transform:scale(.93);box-shadow:none}
+.step b{display:inline-block}
+.pop{animation:pop .32s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{0%{transform:scale(.6)}100%{transform:scale(1)}}
+.bump{animation:bump .4s cubic-bezier(.3,1.6,.5,1)}
+@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.14)}100%{transform:scale(1)}}
+/* micro-interaction: hover kartu */
+.kartu>img,.r img{transition:transform .35s cubic-bezier(.3,1.5,.5,1)}
+@media(hover:hover){
+ .kartu{transition:transform .25s ease,box-shadow .25s ease}
+ .kartu:hover{transform:translateY(-6px);box-shadow:0 14px 26px #1d2b2428}
+ .kartu:hover>img{transform:scale(1.08) rotate(-4deg)}
+ .r{transition:transform .25s ease}
+ .r:hover{transform:translateX(4px)}
+ .r:hover img{transform:scale(1.1) rotate(18deg)}
+}
+/* skeleton shimmer */
+img.sk{border-radius:24px;color:transparent;background:linear-gradient(100deg,#0000000d 30%,#ffffff8c 50%,#0000000d 70%) 0 0/250% 100%;animation:shim 1.3s linear infinite}
+.r img.sk{border-radius:50%}
+@keyframes shim{to{background-position:-150% 0}}
 @media(max-width:560px){.nav input{flex-basis:84px}.kepala{flex-direction:column;align-items:flex-start;gap:6px}.rasa{grid-template-columns:1fr}}
-@media(prefers-reduced-motion:reduce){*{transition:none!important}html{scroll-behavior:auto}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
 </style>
 </head>
 <body>
@@ -122,9 +146,9 @@ label{display:block;font-weight:500;font-size:.92rem;margin-top:10px}
 <script src="menu.js"></script>
 <script>
 // ===== Isi sendiri =====
-const WA_TOKO = "6281350147104";            // nomor WhatsApp toko, format 62 tanpa +
-const SUPABASE_URL = "https://XXXXXXXX.supabase.co";   // opsional: untuk menyimpan pesanan
-const SUPABASE_ANON_KEY = "ISI_ANON_PUBLIC_KEY";       // opsional
+const WA_TOKO = "628350147104";          
+const SUPABASE_URL = "https://XXXXXXXX.supabase.co";  
+const SUPABASE_ANON_KEY = "ISI_ANON_PUBLIC_KEY";       
 // =======================
 
 const $ = id => document.getElementById(id);
@@ -145,7 +169,7 @@ function kartu(it){
     isi = it.v.map((v,i)=>{ const k = reg(it.id,i,it.n,v[0],v[1]);
       return `<div class="var"><span>${v[0]}<span class="harga">${rp(v[1])}</span></span>${ctl(k)}</div>`; }).join("");
   }
-  return `<article class="kartu" data-n="${it.n.toLowerCase()}">${it.img?`<img src="${it.img}" alt="${it.n}" loading="lazy">`:""}<h3>${it.n}</h3>${it.note?`<p class="note">${it.note}</p>`:""}${isi}</article>`;
+  return `<article class="kartu" data-n="${it.n.toLowerCase()}">${it.img?`<img class="sk" src="${it.img}" alt="${it.n}" loading="lazy" onload="this.classList.remove('sk')" onerror="this.classList.remove('sk')">`:""}<h3>${it.n}</h3>${it.note?`<p class="note">${it.note}</p>`:""}${isi}</article>`;
 }
 
 function seksi(c){
@@ -153,11 +177,11 @@ function seksi(c){
   if(c.m === "hs") h += `<div class="hs">${c.items.map(kartu).join("")}</div>`;
   else if(c.m === "donat"){
     h += `<div class="besar">${c.items.map(kartu).join("")}</div><h3 class="rasa-j">Pilihan rasa</h3><div class="rasa">` +
-      c.rasa.map(r=>`<div class="r" data-n="${r.n.toLowerCase()}"><img src="${r.img}" alt="${r.n}" loading="lazy"><div><b>${r.n}</b><span>${r.d}</span></div></div>`).join("") + `</div>`;
+      c.rasa.map(r=>`<div class="r" data-n="${r.n.toLowerCase()}"><img class="sk" src="${r.img}" alt="${r.n}" loading="lazy" onload="this.classList.remove('sk')" onerror="this.classList.remove('sk')"><div><b>${r.n}</b><span>${r.d}</span></div></div>`).join("") + `</div>`;
   } else {
     h += `<div class="grid">${c.items.map(kartu).join("")}</div>`;
     if(c.m === "cake"){
-      h += `<h3 class="rasa-j">Kue ulang tahun custom</h3><div class="gal">${c.gal.map(g=>`<img src="${g}" alt="Contoh kue ulang tahun" loading="lazy">`).join("")}</div>` +
+      h += `<h3 class="rasa-j">Kue ulang tahun custom</h3><div class="gal">${c.gal.map(g=>`<img class="sk" src="${g}" alt="Contoh kue ulang tahun" loading="lazy" onload="this.classList.remove('sk')" onerror="this.classList.remove('sk')" style="min-width:150px">`).join("")}</div>` +
         c.custom.map(x=>`<details data-n="${x.n.toLowerCase()} kue ulang tahun"><summary>${x.n}</summary>${x.v.map((v,i)=>{const k=reg("kut-"+x.id,i,"Kue ulang tahun "+x.n,v[0],v[1]);return `<div class="var"><span>${v[0]}<span class="harga">${rp(v[1])}</span></span>${ctl(k)}</div>`}).join("")}</details>`).join("");
     }
   }
@@ -170,7 +194,8 @@ $("chips").innerHTML = MENU.map(c=>`<a href="#${c.id}" data-s="${c.id}">${c.t}</
 function ubah(k,d){
   const q = ((keranjang[k]||{}).q||0) + d;
   if(q <= 0) delete keranjang[k]; else keranjang[k] = {...K[k], q};
-  document.querySelectorAll(`[data-k="${k}"]`).forEach(e => e.innerHTML = ctlHtml(k));
+  document.querySelectorAll(`[data-k="${k}"]`).forEach(e => { e.innerHTML = ctlHtml(k); const b = e.querySelector('.step b'); if(b){ b.classList.add('pop'); } });
+  if(d > 0){ const c = $('btnKeranjang'); c.classList.remove('bump'); void c.offsetWidth; c.classList.add('bump'); }
   render();
 }
 function render(){
