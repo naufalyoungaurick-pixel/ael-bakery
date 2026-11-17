@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Admin – Ael Bakery</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Figtree:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--pandan:#24493a;--gelap:#183327;--mentega:#f4d35e;--tepung:#fbfaf6;--tinta:#1d2b24;--abu:#5d6b63;--garis:#cfd6cf}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Figtree",system-ui,sans-serif;background:var(--tepung);color:var(--tinta);line-height:1.45}
+h1,h2,h3{font-family:"Bricolage Grotesque","Arial Black",sans-serif;letter-spacing:-.02em;margin:0}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;border:0;border-radius:999px;padding:10px 18px;font-weight:700;background:var(--pandan);color:#fff;min-height:40px}
+button.abu{background:#fff;color:var(--tinta);border:1px solid var(--garis)}
+button.bahaya{background:#fff;color:#a01c1c;border:1px solid #e3b4b4}
+input,select,textarea{padding:10px 12px;border:1px solid #aab4ac;border-radius:10px;background:#fff;width:100%;font-size:16px}
+header{background:var(--pandan);color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+header b{font-family:"Bricolage Grotesque",sans-serif;font-size:1.3rem}
+header button{background:var(--mentega);color:var(--gelap)}
+main{max-width:980px;margin:auto;padding:18px 16px 80px}
+.tabs{display:flex;gap:8px;margin-bottom:18px}
+.tabs button{background:#fff;color:var(--tinta);border:1px solid var(--garis)}
+.tabs button.on{background:var(--pandan);color:#fff;border-color:var(--pandan)}
+.card{background:#fff;border:1px solid var(--garis);border-radius:16px;padding:14px;margin-bottom:12px}
+.center{max-width:420px;margin:60px auto;text-align:center}
+.row2{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.ps{border-radius:999px;padding:2px 10px;font-size:.78rem;font-weight:700;background:var(--mentega)}
+.ps.selesai{background:#bfe0c4}.ps.batal{background:#f3c4c4}.ps.diproses{background:#cfe4f0}
+.muted{color:var(--abu);font-size:.9rem}
+.row{display:grid;grid-template-columns:48px 1fr;gap:10px;padding:12px 0;border-top:1px solid var(--garis)}
+.row img{width:48px;height:48px;object-fit:contain;border-radius:8px;background:#f0f2ef}
+.fld{display:flex;gap:8px;flex-wrap:wrap;align-items:end;margin-top:8px}
+.fld label{font-size:.78rem;color:var(--abu);display:block}
+.fld>div{flex:1 1 120px}.fld>.cek{flex:0 0 auto;display:flex;align-items:center;gap:6px;padding-bottom:10px}
+.fld .cek input{width:auto}
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:10px}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--gelap);color:#fff;padding:10px 18px;border-radius:999px;opacity:0;transition:opacity .25s;pointer-events:none}
+#toast.on{opacity:1}
+.hide{display:none!important}
+</style>
+</head>
+<body>
+<header><b>Ael Bakery · Admin</b><span><a href="index.html" style="color:#fff;margin-right:12px">Lihat toko</a><button id="btnKeluar" class="hide">Keluar</button></span></header>
+<main id="app"><p>Memuat…</p></main>
+<div id="toast"></div>
+
+<script src="menu.js"></script>
+<script type="module">
+import {auth,db,isAdmin,masuk,keluar,onAuthStateChanged,ambilMenu,batas,ref,set,update,remove,push,onValue,query,orderByChild} from "./fb.js";
+const $ = id => document.getElementById(id);
+const rp = n => "Rp" + Number(n).toLocaleString("id-ID");
+const esc = t => String(t ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let stopPesanan = null, tab = "pesanan", filter = "semua";
+const STATUS = ["baru","diproses","selesai","batal"];
+
+function toast(t){ const e = $("toast"); e.textContent = t; e.classList.add("on"); setTimeout(() => e.classList.remove("on"), 1800); }
+$("btnKeluar").onclick = () => keluar();
+
+onAuthStateChanged(auth, u => {
+  if(stopPesanan){ stopPesanan(); stopPesanan = null; }
+  $("btnKeluar").classList.toggle("hide", !u);
+  if(!u) $("app").innerHTML = `<div class="card center"><h2>Masuk admin</h2><p class="muted">Masuk dengan akun Google admin.</p><button id="login">Masuk dengan Google</button></div>`,
+         $("login").onclick = () => masuk().catch(e => alert("Gagal masuk: " + (e.code || e.message)));
+  else if(!isAdmin(u)) $("app").innerHTML = `<div class="card center"><h2>Bukan admin</h2><p class="muted">${esc(u.email)} tidak punya akses ke halaman ini.</p></div>`;
+  else mulai();
+});
+
+function mulai(){
+  $("app").innerHTML = `<div class="tabs"><button data-t="pesanan">Pesanan</button><button data-t="menu">Menu</button></div><div id="isi"></div>`;
+  document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => { tab = b.dataset.t; pilihTab(); });
+  pilihTab();
+}
+function pilihTab(){
+  document.querySelectorAll(".tabs button").forEach(b => b.classList.toggle("on", b.dataset.t === tab));
+  if(stopPesanan){ stopPesanan(); stopPesanan = null; }
+  tab === "pesanan" ? tabPesanan() : tabMenu();
+}
+
+/* ===== Pesanan ===== */
+function wa(hp){ let d = String(hp).replace(/\D/g,""); if(d.startsWith("0")) d = "62" + d.slice(1); return "https://wa.me/" + d; }
+function tabPesanan(){
+  $("isi").innerHTML = `<div id="peringatan"></div><div class="row2" style="margin-bottom:12px"><select id="fs" style="max-width:200px"><option value="semua">Semua status</option>${STATUS.map(s=>`<option>${s}</option>`).join("")}</select><span class="muted" id="jml"></span></div><div id="daftar">Memuat pesanan…</div>`;
+  $("fs").value = filter; $("fs").onchange = () => { filter = $("fs").value; gambar(); };
+  const peringatan = t => $("peringatan").innerHTML = t ? `<div class="card" style="border-color:#e3b4b4;background:#fff6f6">${t}</div>` : "";
+  let data = [], tersambung = false;
+  const gambar = () => {
+    const rows = data.filter(d => filter === "semua" || d.status === filter);
+    $("jml").textContent = rows.length + " pesanan";
+    $("daftar").innerHTML = rows.map(o => `<div class="card"><div class="row2" style="justify-content:space-between"><b>${esc(o.nama)}</b><span class="ps ${esc(o.status)}">${esc(o.status)}</span></div>
+      <div class="muted">${o.waktu ? new Date(o.waktu).toLocaleString("id-ID") : "baru saja"} · <a href="${wa(o.hp)}" target="_blank" rel="noopener">${esc(o.hp)}</a> · ${esc(o.email)}</div>
+      <div style="margin:8px 0">${Object.values(o.items||{}).map(i => `${i.qty}× ${esc(i.name)}`).join("<br>")}</div>
+      ${o.alamat ? `<div class="muted">Alamat: ${esc(o.alamat)}</div>` : ""}${o.catatan ? `<div class="muted">Catatan: ${esc(o.catatan)}</div>` : ""}
+      <div class="row2" style="justify-content:space-between;margin-top:10px"><b>${rp(o.total)}</b>
+      <select data-id="${o.id}" style="max-width:160px">${STATUS.map(s => `<option ${s===o.status?"selected":""}>${s}</option>`).join("")}</select></div></div>`).join("") || `<p class="muted">Belum ada pesanan.</p>`;
+    $("daftar").querySelectorAll("select[data-id]").forEach(sel => sel.onchange = () =>
+      batas(set(ref(db,"pesanan/"+sel.dataset.id+"/status"), sel.value)).then(() => toast("Status diperbarui")).catch(e => alert("Gagal: " + e.code)));
+  };
+  const timer = setTimeout(() => { if(!tersambung) peringatan("Belum bisa terhubung ke Realtime Database. Buka Firebase Console → Build → Realtime Database. Kalau ada tombol <b>Create Database</b>, database belum dibuat. Kalau sudah dibuat di Singapura, isi <code>DATABASE_URL</code> di fb.js dengan URL yang tampil di halaman itu."); }, 8000);
+  const stop1 = onValue(ref(db,".info/connected"), s => { if(s.val()){ tersambung = true; peringatan(""); } });
+  const stop2 = onValue(query(ref(db,"pesanan"), orderByChild("waktu")),
+    sn => { data = []; sn.forEach(d => { data.push({id:d.key, ...d.val()}); }); data.reverse(); gambar(); },
+    e => { tersambung = true; peringatan(`Gagal memuat pesanan (${esc(e.code || e.message)}). Pastikan aturan dari file database.rules.json sudah di-Publish.`); $("daftar").innerHTML = ""; });
+  stopPesanan = () => { clearTimeout(timer); stop1(); stop2(); };
+}
+
+/* ===== Menu ===== */
+function gambarMenu(m){
+  $("lm").innerHTML = m.map(c => `<section data-c="${c.id}"><h3 style="margin:20px 0 4px">${esc(c.t)}</h3>${c.items.map(it => `
+    <div class="row" data-id="${esc(it.id)}" ${it.did ? `data-did="${esc(it.did)}"` : ""} data-n="${esc(it.n.toLowerCase())}">
+      ${it.img ? `<img src="${esc(it.img)}" alt="" loading="lazy">` : `<div></div>`}
+      <div><div class="fld"><div style="flex:2 1 180px"><label>Nama</label><input class="in-n" value="${esc(it.n)}"></div>
+        ${it.v.map((v,i) => `<div><label>${esc(v[0] || "Harga (Rp)")}</label><input class="in-p" type="number" min="0" value="${v[1]}" ${it.baru && i ? "disabled" : ""}></div>`).join("")}</div>
+      <div class="fld"><label class="cek"><input class="in-habis" type="checkbox" ${it.habis ? "checked" : ""}> Habis</label>
+        ${it.baru ? "" : `<label class="cek"><input class="in-hapus" type="checkbox" ${it.hapus ? "checked" : ""}> Sembunyikan</label>`}
+        <button class="simpan">Simpan</button>
+        ${it.baru ? `<button class="bahaya hapus">Hapus</button>` : it.diedit ? `<button class="abu reset">Kembalikan</button>` : ""}</div></div></div>`).join("")}</section>`).join("");
+  $("cari").dispatchEvent(new Event("input"));
+}
+
+async function tabMenu(){
+  const opsi = MENU.map(c => `<option value="${c.id}">${esc(c.t)}</option>`).join("");
+  $("isi").innerHTML = `<div class="card"><h3>Tambah menu baru</h3><div class="form">
+    <select id="nk">${opsi}</select><input id="nn" placeholder="Nama menu"><input id="np" type="number" min="0" placeholder="Harga (angka, mis. 12000)">
+    <input id="nc" placeholder="Catatan (opsional)"><input id="ni" placeholder="Link foto (opsional)"></div>
+    <button id="tambah" style="margin-top:10px">Tambah</button></div><div id="peringatan"></div><input id="cari" placeholder="Cari menu…" style="margin-bottom:12px"><div id="lm"></div>`;
+  $("tambah").onclick = async () => {
+    const n = $("nn").value.trim(), p = Number($("np").value);
+    if(!n || !(p > 0)) return alert("Isi nama dan harga dulu.");
+    try{ await batas(push(ref(db,"menu_baru"), {kat:$("nk").value, n, p, note:$("nc").value.trim(), img:$("ni").value.trim(), habis:false})); toast("Menu ditambahkan"); tabMenu(); }
+    catch(e){ alert(e.code === "timeout" ? "Belum bisa terhubung ke database. Cek apakah Realtime Database sudah dibuat." : "Gagal: " + e.code); }
+  };
+  $("cari").oninput = () => { const q = $("cari").value.trim().toLowerCase();
+    document.querySelectorAll("#lm .row").forEach(r => r.classList.toggle("hide", !!q && !r.dataset.n.includes(q) && !r.querySelector(".in-n").value.toLowerCase().includes(q)));
+    document.querySelectorAll("#lm section").forEach(s => s.classList.toggle("hide", !s.querySelector(".row:not(.hide)"))); };
+  $("lm").onclick = async e => {
+    const row = e.target.closest(".row"); if(!row) return;
+    const id = row.dataset.id, did = row.dataset.did;
+    try{
+      if(e.target.classList.contains("simpan")){
+        const n = row.querySelector(".in-n").value.trim(), vp = [...row.querySelectorAll(".in-p")].map(i => Number(i.value) || 0);
+        const habis = row.querySelector(".in-habis").checked, hapus = row.querySelector(".in-hapus")?.checked || false;
+        if(!n) return alert("Nama tidak boleh kosong.");
+        e.target.disabled = true;
+        await batas(did ? update(ref(db,"menu_baru/"+did), {n, p:vp[0], habis}) : update(ref(db,"menu_edit/"+id), {n, vp, habis, hapus}));
+        e.target.disabled = false; toast("Tersimpan");
+      } else if(e.target.classList.contains("reset")){
+        await batas(remove(ref(db,"menu_edit/"+id))); toast("Dikembalikan ke bawaan"); tabMenu();
+      } else if(e.target.classList.contains("hapus")){
+        if(confirm("Hapus menu ini?")){ await batas(remove(ref(db,"menu_baru/"+did))); toast("Dihapus"); tabMenu(); }
+      }
+    }catch(err){ document.querySelectorAll("#lm .simpan").forEach(b => b.disabled = false);
+      alert(err.code === "timeout" ? "Belum bisa terhubung ke database. Cek apakah Realtime Database sudah dibuat." : "Gagal: " + (err.code || err.message)); }
+  };
+  gambarMenu(structuredClone(MENU));              // tampil langsung dari menu bawaan
+  $("peringatan").innerHTML = `<p class="muted">Memuat perubahan terbaru…</p>`;
+  const m = await ambilMenu();
+  if(tab !== "menu" || !$("peringatan")) return;
+  if(m.gagal) $("peringatan").innerHTML = `<div class="card" style="border-color:#e3b4b4;background:#fff6f6">Perubahan menu dari database belum bisa dimuat, jadi yang tampil adalah menu bawaan. Kalau database belum dibuat, perubahan yang kamu simpan juga belum akan tersimpan.</div>`;
+  else { $("peringatan").innerHTML = ""; if(!$("lm").contains(document.activeElement)) gambarMenu(m); }
+}
+</script>
+</body>
+</html>

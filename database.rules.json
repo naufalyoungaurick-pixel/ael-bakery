@@ -1,0 +1,20 @@
+{
+  "rules": {
+    "menu_edit": {
+      ".read": true,
+      ".write": "auth != null && auth.token.email == 'naufalyoungaurick@gmail.com' && auth.token.email_verified == true"
+    },
+    "menu_baru": {
+      ".read": true,
+      ".write": "auth != null && auth.token.email == 'naufalyoungaurick@gmail.com' && auth.token.email_verified == true"
+    },
+    "pesanan": {
+      ".read": "auth != null && ((auth.token.email == 'naufalyoungaurick@gmail.com' && auth.token.email_verified == true) || (query.orderByChild == 'uid' && query.equalTo == auth.uid))",
+      ".indexOn": ["uid", "waktu"],
+      "$id": {
+        ".write": "auth != null && ((auth.token.email == 'naufalyoungaurick@gmail.com' && auth.token.email_verified == true) || (!data.exists() && newData.child('uid').val() == auth.uid && newData.child('status').val() == 'baru'))",
+        ".validate": "newData.hasChildren(['uid', 'status', 'total']) && newData.child('total').isNumber()"
+      }
+    }
+  }
+}

@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<title>Ael Bakery – Menu roti, donat, pastry, dan cake</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Figtree:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--pandan:#24493a;--gelap:#183327;--mentega:#f4d35e;--tepung:#fbfaf6;--kerak:#8b4a1e;--tinta:#1d2b24;--abu:#5d6b63;--garis:#cfd6cf;
+--display:"Bricolage Grotesque","Arial Black",system-ui,sans-serif;--body:"Figtree",system-ui,sans-serif}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:var(--body);font-size:1.02rem;line-height:1.5;background:var(--tepung);color:var(--tinta)}
+:focus-visible{outline:3px solid var(--mentega);outline-offset:2px}
+button,input,textarea{font:inherit}button{cursor:pointer}
+.atas{background:var(--pandan);color:var(--tepung)}
+.bar{max-width:1080px;margin:auto;padding:14px 20px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-family:var(--display);font-weight:800;font-size:1.5rem;letter-spacing:-.02em}
+.bar button{background:var(--mentega);color:var(--gelap);border:0;border-radius:999px;padding:9px 18px;font-weight:700}
+.hero{max-width:1080px;margin:auto;padding:28px 20px 56px}
+.hero h1{font-family:var(--display);font-weight:800;font-size:clamp(2.4rem,8vw,5rem);line-height:.95;letter-spacing:-.035em;margin:0 0 16px;max-width:12ch}
+.hero p{max-width:36ch;margin:0;color:#d7e3da}
+/* navigasi */
+.nav{position:sticky;top:0;z-index:4;background:var(--tepung);border-bottom:1px solid var(--garis)}
+.nav div{max-width:1080px;margin:auto;padding:10px 20px;display:flex;gap:10px;align-items:center}
+.nav input{flex:0 0 110px;padding:9px 14px;border:1px solid #aab4ac;border-radius:999px;background:#fff;min-width:0}
+.chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;flex:1}
+.chips::-webkit-scrollbar{display:none}
+.chips a{white-space:nowrap;text-decoration:none;color:var(--tinta);border:1px solid var(--garis);border-radius:999px;padding:7px 14px;font-weight:500}
+.chips a.on{background:var(--pandan);border-color:var(--pandan);color:#fff}
+/* seksi */
+main{max-width:1080px;margin:auto;padding:0 20px 120px}
+section{padding-top:56px;scroll-margin-top:60px}
+.kepala{display:flex;align-items:flex-end;gap:16px;margin-bottom:46px;border-left:12px solid var(--t);padding-left:14px}
+.kepala h2{font-family:var(--display);font-weight:800;font-size:clamp(2rem,6vw,3.2rem);line-height:1;letter-spacing:-.03em;margin:0}
+.kepala p{margin:0;color:var(--abu);max-width:40ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:56px 16px}
+.hs{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:60px 4px 18px;margin-top:-52px}
+.hs .kartu{flex:0 0 200px;scroll-snap-align:start}
+.kartu{position:relative;background:color-mix(in srgb,var(--t) 42%,#fff);border-radius:22px;padding:0 14px 14px;display:flex;flex-direction:column}
+.kartu>img{width:82%;aspect-ratio:1;object-fit:contain;margin:-52px auto 2px;display:block;filter:drop-shadow(0 10px 9px #0003)}
+.kartu h3{font-family:var(--display);font-weight:500;font-size:1.12rem;line-height:1.15;margin:4px 0 0;letter-spacing:-.01em}
+.note{margin:4px 0 0;font-size:.85rem;color:var(--abu)}
+.bawah{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;margin-top:auto;padding-top:12px}
+.harga{font-weight:700;color:var(--kerak)}
+.var{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 0;border-top:1px dashed #0003;font-size:.92rem}
+.var:first-of-type{margin-top:10px}
+.var .harga{display:block}
+.tambah{background:var(--pandan);color:#fff;border:0;border-radius:999px;padding:7px 14px;font-weight:700;font-size:.92rem}
+.tambah:hover{background:var(--gelap)}
+.step{display:inline-flex;align-items:center;background:var(--mentega);border-radius:999px;padding:2px}
+.step button{width:30px;height:30px;border:0;border-radius:50%;background:transparent;font-size:1.1rem;font-weight:700;color:var(--gelap)}
+.step button:hover{background:#0001}.step b{min-width:20px;text-align:center}
+.besar{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:56px 16px}
+/* donat */
+.rasa-j{font-family:var(--display);font-weight:800;font-size:1.4rem;margin:44px 0 18px}
+.rasa{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.r{display:flex;gap:14px;align-items:center;background:color-mix(in srgb,var(--t) 30%,#fff);border-radius:999px 22px 22px 999px;padding:8px 18px 8px 8px}
+.r img{width:84px;height:84px;object-fit:contain;flex:none;filter:drop-shadow(0 5px 5px #0003)}
+.r b{font-family:var(--display);font-weight:500;display:block;line-height:1.15}
+.r span{font-size:.82rem;color:var(--abu);line-height:1.3;display:block;margin-top:2px}
+/* cake custom */
+.gal{display:flex;gap:10px;overflow-x:auto;padding:6px 0 14px}
+.gal img{height:150px;width:auto;min-height:150px;flex:none;filter:drop-shadow(0 8px 7px #0003)}
+details{border:1px solid var(--garis);border-radius:16px;padding:4px 16px;margin-bottom:10px;background:#fff}
+summary{font-family:var(--display);font-weight:500;font-size:1.15rem;padding:10px 0;cursor:pointer}
+details .var{border-top:1px dashed var(--garis)}details .var:first-of-type{margin-top:0}
+.kosong{padding:60px 0;color:var(--abu)}
+.hide{display:none!important}
+footer{border-top:1px solid var(--garis);padding:28px 20px 100px;text-align:center;color:var(--abu)}
+/* keranjang */
+#bilah{position:fixed;left:0;right:0;bottom:0;background:var(--gelap);color:var(--tepung);transform:translateY(100%);transition:transform .25s;z-index:5}
+#bilah.ada{transform:none}
+#bilah div{max-width:1080px;margin:auto;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+#bilah button{background:var(--mentega);color:var(--gelap);border:0;border-radius:999px;padding:10px 20px;font-weight:700}
+#latar{position:fixed;inset:0;background:#0007;opacity:0;pointer-events:none;transition:opacity .25s;z-index:6}
+#latar.buka{opacity:1;pointer-events:auto}
+#laci,#akun{position:fixed;right:0;top:0;height:100%;width:min(420px,100%);background:var(--tepung);padding:22px;transform:translateX(100%);transition:transform .25s;overflow:auto;z-index:7}
+#laci.buka,#akun.buka{transform:none}
+#laci h2,#akun h2{font-family:var(--display);font-weight:800;margin:0 0 12px}
+.item{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--garis)}
+.total{display:flex;justify-content:space-between;font-weight:700;font-size:1.15rem;margin:14px 0}
+label{display:block;font-weight:500;font-size:.92rem;margin-top:10px}
+#laci input,#laci textarea{width:100%;padding:11px;margin-top:4px;border:1px solid #aab4ac;border-radius:8px;background:#fff}
+#kirim{width:100%;margin-top:16px;background:var(--pandan);color:#fff;border:0;border-radius:999px;padding:13px;font-weight:700}
+#tutup{width:100%;margin-top:6px;background:none;border:0;padding:10px;color:var(--abu)}
+/* micro-interaction: tombol */
+.tambah,.bar button,#bilah button,#kirim,.step button{transition:transform .15s,background-color .2s,box-shadow .2s}
+.tambah:hover,#kirim:hover{transform:translateY(-2px);box-shadow:0 6px 14px #24493a40}
+.bar button:hover,#bilah button:hover{transform:translateY(-1px);box-shadow:0 5px 12px #0003}
+.tambah:active,.bar button:active,#bilah button:active,#kirim:active,.step button:active{transform:scale(.93);box-shadow:none}
+.step b{display:inline-block}
+.pop{animation:pop .32s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{0%{transform:scale(.6)}100%{transform:scale(1)}}
+.bump{animation:bump .4s cubic-bezier(.3,1.6,.5,1)}
+@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.14)}100%{transform:scale(1)}}
+/* micro-interaction: hover kartu */
+.kartu>img,.r img{transition:transform .35s cubic-bezier(.3,1.5,.5,1)}
+@media(hover:hover){
+ .kartu{transition:transform .25s ease,box-shadow .25s ease}
+ .kartu:hover{transform:translateY(-6px);box-shadow:0 14px 26px #1d2b2428}
+ .kartu:hover>img{transform:scale(1.08) rotate(-4deg)}
+ .r{transition:transform .25s ease}
+ .r:hover{transform:translateX(4px)}
+ .r:hover img{transform:scale(1.1) rotate(18deg)}
+}
+/* skeleton shimmer */
+img.sk{border-radius:24px;color:transparent;background:linear-gradient(100deg,#0000000d 30%,#ffffff8c 50%,#0000000d 70%) 0 0/250% 100%;animation:shim 1.3s linear infinite}
+.r img.sk{border-radius:50%}
+@keyframes shim{to{background-position:-150% 0}}
+#gerbang{position:fixed;inset:0;z-index:50;background:radial-gradient(circle at 25% 15%,#2f5d4a,var(--gelap));display:flex;align-items:center;justify-content:center;padding:24px;color:var(--tepung);overflow:auto}
+.gkartu{max-width:420px;width:100%}
+.gkartu .logo{font-size:1.5rem}
+.gkartu h1{font-family:var(--display);font-weight:800;font-size:clamp(2.6rem,12vw,4.4rem);line-height:.95;letter-spacing:-.035em;margin:22px 0 14px}
+.gkartu p{color:#d7e3da;margin:0 0 26px}
+#gMasuk{display:flex;align-items:center;gap:12px;background:#fff;color:var(--tinta);border:0;border-radius:999px;padding:14px 26px;font-weight:700;min-height:52px}
+#gMasuk.hide,#gLewati.hide{display:none}
+#gLewati{display:block;margin-top:14px;background:none;border:0;color:#d7e3da;text-decoration:underline;min-height:44px}
+.aksi{display:flex;gap:8px;align-items:center}
+.bar .ghost{background:transparent;color:var(--tepung);border:1px solid #fff6}
+.kartu.habis>img{filter:grayscale(1) drop-shadow(0 10px 9px #0003);opacity:.55}
+.badge{display:inline-block;background:#1d2b24;color:#fff;border-radius:999px;padding:6px 12px;font-size:.85rem;font-weight:700}
+#akun h3{font-family:var(--display);margin:22px 0 8px}
+#akun a{display:inline-block;margin-top:8px;color:var(--pandan);font-weight:700}
+#keluar,#tutupAkun{width:100%;margin-top:10px;min-height:44px;border-radius:999px;border:1px solid var(--garis);background:#fff}
+.ps{display:inline-block;border-radius:999px;padding:2px 10px;font-size:.78rem;font-weight:700;background:var(--mentega);color:var(--gelap)}
+.ps.selesai{background:#bfe0c4}.ps.batal{background:#f3c4c4}.ps.diproses{background:#cfe4f0}
+.rw{padding:10px 0;border-bottom:1px solid var(--garis);font-size:.92rem}
+/* ripple */
+.chips a{flex:none}
+button,.chips a{position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.ripple{position:absolute;border-radius:50%;background:currentColor;opacity:.32;transform:scale(0);pointer-events:none;animation:rip .6s ease-out forwards}
+@keyframes rip{to{transform:scale(1);opacity:0}}
+/* tampilan ponsel */
+@media(max-width:560px){
+ body{font-size:1rem}
+ .bar{padding:12px 16px}.logo{font-size:1.3rem}
+ .hero{padding:18px 16px 40px}.hero h1{margin-bottom:12px}
+ .nav div{padding:8px 12px;gap:8px}
+ .nav input{flex:0 0 76px;padding:10px 12px;font-size:16px}
+ .chips a{padding:10px 14px}
+ main{padding:0 14px 120px}
+ section{padding-top:40px;scroll-margin-top:64px}
+ .kepala{flex-direction:column;align-items:flex-start;gap:4px;margin-bottom:44px;border-left-width:8px}
+ .kepala p{font-size:.92rem}
+ .grid,.besar{grid-template-columns:repeat(2,minmax(0,1fr));gap:50px 12px}
+ .hs .kartu{flex-basis:172px}
+ .kartu{padding:0 10px 12px;border-radius:18px}
+ .kartu>img{width:90%;margin-top:-46px}
+ .kartu h3{font-size:1rem}
+ .bawah{flex-direction:column;align-items:stretch;gap:8px}
+ .bawah>.harga{font-size:.98rem}
+ .bawah>span[data-k]{display:block}
+ .tambah{width:100%;padding:11px 12px;min-height:44px}
+ .step{width:100%;justify-content:space-between}
+ .step button{width:42px;height:40px}
+ .var{flex-wrap:wrap;font-size:.88rem}
+ .var .step{width:auto}.var .tambah{width:auto;min-height:40px;padding:9px 14px}
+ .rasa{grid-template-columns:1fr}
+ .r{padding:8px 14px 8px 8px}.r img{width:72px;height:72px}
+ .gal img{height:130px;min-height:130px}
+ #laci,#akun{width:100%;height:100dvh;padding:18px 16px calc(24px + env(safe-area-inset-bottom))}
+ #laci input,#laci textarea{font-size:16px;padding:12px}
+ #kirim,#tutup{min-height:48px}
+ #bilah div{padding:10px 16px calc(10px + env(safe-area-inset-bottom))}
+ #bilah button{padding:12px 18px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="atas">
+  <div class="bar"><span class="logo">Ael Bakery</span><div class="aksi"><button id="btnAkun" class="ghost" type="button">Masuk</button><button id="btnKeranjang" type="button">Keranjang (<span id="jumlah">0</span>)</button></div></div>
+  <div class="hero"><h1>Roti, donat, dan cake segar.</h1><p>Pilih dari menu lengkap kami, lalu kirim pesananmu lewat WhatsApp.</p></div>
+</div>
+
+<nav class="nav" aria-label="Kategori menu"><div>
+  <input id="cari" type="search" placeholder="Cari" aria-label="Cari menu">
+  <div class="chips" id="chips"></div>
+</div></nav>
+
+<main id="menu"></main>
+
+<div id="bilah"><div><span><b id="bJumlah">0</b> item · <b id="bTotal">Rp0</b></span><button id="bBuka" type="button">Lihat pesanan</button></div></div>
+<div id="latar"></div>
+<aside id="laci" aria-label="Pesanan">
+  <h2>Pesananmu</h2>
+  <div id="isiKeranjang"></div>
+  <div class="total"><span>Total</span><span id="total">Rp0</span></div>
+  <label for="nama">Nama</label><input id="nama" autocomplete="name">
+  <label for="hp">Nomor WhatsApp</label><input id="hp" inputmode="tel" placeholder="0812xxxxxxx" autocomplete="tel">
+  <label for="alamat">Alamat pengantaran</label><textarea id="alamat" rows="2" autocomplete="street-address"></textarea>
+  <label for="catatan">Catatan (varian rasa, tanggal ambil, dll.)</label><textarea id="catatan" rows="2"></textarea>
+  <button id="kirim" type="button">Kirim pesanan</button>
+  <button id="tutup" type="button">Kembali ke menu</button>
+</aside>
+<div id="gerbang">
+  <div class="gkartu">
+    <span class="logo">Ael Bakery</span>
+    <h1>Roti segar,<br>mulai dari sini.</h1>
+    <p>Masuk dengan akun Google untuk melihat menu dan memesan.</p>
+    <p id="gMuat">Memuat…</p>
+    <button id="gMasuk" class="hide" type="button"><svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.9-2.2 5.3-4.6 6.9l7.4 5.8c4.3-4 6.9-9.9 6.9-17.2z"/><path fill="#FBBC05" d="M10.5 28.7c-.5-1.4-.8-2.9-.8-4.7s.3-3.3.8-4.7l-7.9-6.1C.9 16.4 0 20.1 0 24s.9 7.6 2.6 10.8l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.4-5.8c-2.1 1.4-4.8 2.3-8.5 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg>Masuk dengan Google</button>
+    <button id="gLewati" class="hide" type="button">Lihat menu dulu</button>
+  </div>
+</div>
+<aside id="akun" aria-label="Akun">
+  <h2>Akunmu</h2>
+  <div id="akunInfo"></div>
+  <a id="linkAdmin" class="hide" href="admin.html">Buka panel admin</a>
+  <h3>Pesanan saya</h3>
+  <div id="riwayat"></div>
+  <button id="keluar" type="button">Keluar</button>
+  <button id="tutupAkun" type="button">Tutup</button>
+</aside>
+<footer>© Ael Bakery</footer>
+
+<script src="menu.js"></script>
+<script type="module">
+import {auth,db,isAdmin,masuk,keluar,onAuthStateChanged,ambilMenu,batas,ref,get,push,query,orderByChild,equalTo,serverTimestamp} from "./fb.js";
+
+const WA_TOKO = "6281350147104";   // nomor WhatsApp toko, format 62 tanpa +
+const WAJIB_LOGIN = true;          // true = halaman login tampil dulu; false = pengunjung boleh lihat menu tanpa masuk
+
+const $ = id => document.getElementById(id);
+const rp = n => "Rp" + n.toLocaleString("id-ID");
+const SK = `onload="this.classList.remove('sk')" onerror="this.classList.remove('sk')"`;
+const K = {}; let keranjang = {}, user = null;
+
+const ctlHtml = k => { const q = keranjang[k] ? keranjang[k].q : 0;
+  return q ? `<span class="step"><button type="button" aria-label="Kurangi" onclick="ubah('${k}',-1)">−</button><b>${q}</b><button type="button" aria-label="Tambah" onclick="ubah('${k}',1)">+</button></span>`
+           : `<button class="tambah" type="button" onclick="ubah('${k}',1)">Tambah</button>`; };
+const ctl = k => `<span data-k="${k}">${ctlHtml(k)}</span>`;
+function reg(id,i,name,label,price){ const k = id+"|"+i; K[k] = {n: label ? name+" – "+label : name, p: price}; return k; }
+
+function kartu(it){
+  const aksi = k => it.habis ? `<span class="badge">Habis</span>` : ctl(k);
+  let isi;
+  if(it.v.length === 1){ const k = reg(it.id,0,it.n,it.v[0][0],it.v[0][1]);
+    isi = `<div class="bawah"><span class="harga">${rp(it.v[0][1])}</span>${aksi(k)}</div>`;
+  } else {
+    isi = it.v.map((v,i)=>{ const k = reg(it.id,i,it.n,v[0],v[1]);
+      return `<div class="var"><span>${v[0]}<span class="harga">${rp(v[1])}</span></span>${aksi(k)}</div>`; }).join("");
+  }
+  return `<article class="kartu${it.habis?" habis":""}" data-n="${it.n.toLowerCase()}">${it.img?`<img class="sk" src="${it.img}" alt="${it.n}" loading="lazy" ${SK}>`:""}<h3>${it.n}</h3>${it.note?`<p class="note">${it.note}</p>`:""}${isi}</article>`;
+}
+
+function seksi(c){
+  const items = c.items.filter(i => !i.hapus);
+  let h = `<section id="${c.id}" style="--t:${c.w}"><div class="kepala"><h2>${c.t}</h2><p>${c.k}</p></div>`;
+  if(c.m === "hs") h += `<div class="hs">${items.map(kartu).join("")}</div>`;
+  else if(c.m === "donat"){
+    h += `<div class="besar">${items.map(kartu).join("")}</div><h3 class="rasa-j">Pilihan rasa</h3><div class="rasa">` +
+      c.rasa.map(r=>`<div class="r" data-n="${r.n.toLowerCase()}"><img class="sk" src="${r.img}" alt="${r.n}" loading="lazy" ${SK}><div><b>${r.n}</b><span>${r.d}</span></div></div>`).join("") + `</div>`;
+  } else {
+    h += `<div class="grid">${items.map(kartu).join("")}</div>`;
+    if(c.m === "cake"){
+      h += `<h3 class="rasa-j">Kue ulang tahun custom</h3><div class="gal">${c.gal.map(g=>`<img class="sk" src="${g}" alt="Contoh kue ulang tahun" loading="lazy" ${SK} style="min-width:150px">`).join("")}</div>` +
+        c.custom.map(x=>`<details data-n="${x.n.toLowerCase()} kue ulang tahun"><summary>${x.n}</summary>${x.v.map((v,i)=>{const k=reg("kut-"+x.id,i,"Kue ulang tahun "+x.n,v[0],v[1]);return `<div class="var"><span>${v[0]}<span class="harga">${rp(v[1])}</span></span>${ctl(k)}</div>`}).join("")}</details>`).join("");
+    }
+  }
+  return h + "</section>";
+}
+
+const io = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting){
+  document.querySelectorAll(".chips a").forEach(a => a.classList.toggle("on", a.dataset.s === e.target.id));
+  const on = document.querySelector(".chips a.on"); if(on) on.scrollIntoView({inline:"center",block:"nearest"}); } }), {rootMargin:"-30% 0px -60% 0px"});
+
+function tampil(m){
+  $("menu").innerHTML = m.map(seksi).join("") + `<p class="kosong hide" id="kosong">Menu tidak ditemukan. Coba kata lain.</p>`;
+  $("chips").innerHTML = m.map(c=>`<a href="#${c.id}" data-s="${c.id}">${c.t}</a>`).join("");
+  io.disconnect(); document.querySelectorAll("section").forEach(s => io.observe(s));
+  $("cari").dispatchEvent(new Event("input"));
+}
+tampil(MENU);                                   // tampil cepat dari menu bawaan
+ambilMenu().then(tampil).catch(console.warn);   // lalu terapkan perubahan dari admin
+
+window.ubah = function(k,d){
+  const q = ((keranjang[k]||{}).q||0) + d;
+  if(q <= 0) delete keranjang[k]; else keranjang[k] = {...K[k], q};
+  document.querySelectorAll(`[data-k="${k}"]`).forEach(e => { e.innerHTML = ctlHtml(k); const b = e.querySelector(".step b"); if(b) b.classList.add("pop"); });
+  if(d > 0){ const c = $("btnKeranjang"); c.classList.remove("bump"); void c.offsetWidth; c.classList.add("bump"); }
+  render();
+};
+function render(){
+  let total = 0, jml = 0, html = "";
+  for(const k in keranjang){ const x = keranjang[k]; total += x.p*x.q; jml += x.q;
+    html += `<div class="item"><span>${x.q} × ${x.n}</span><span>${rp(x.p*x.q)}</span></div>`; }
+  $("isiKeranjang").innerHTML = html || "<p>Belum ada item di pesanan. Pilih dari menu.</p>";
+  $("total").textContent = rp(total); $("jumlah").textContent = jml; $("bJumlah").textContent = jml; $("bTotal").textContent = rp(total);
+  $("bilah").classList.toggle("ada", jml > 0);
+}
+
+/* cari */
+$("cari").addEventListener("input", () => {
+  const q = $("cari").value.trim().toLowerCase(); let ada = 0;
+  document.querySelectorAll("section").forEach(s => {
+    let n = 0;
+    s.querySelectorAll("[data-n]").forEach(el => { const ok = !q || el.dataset.n.includes(q); el.classList.toggle("hide", !ok); if(ok) n++; });
+    s.classList.toggle("hide", !n); ada += n;
+  });
+  $("kosong").classList.toggle("hide", ada > 0);
+});
+
+/* panel keranjang & akun */
+const bukaKeranjang = () => { $("laci").classList.add("buka"); $("latar").classList.add("buka"); };
+const tutup = () => { ["laci","akun","latar"].forEach(i => $(i).classList.remove("buka")); };
+$("btnKeranjang").onclick = bukaKeranjang; $("bBuka").onclick = bukaKeranjang;
+$("tutup").onclick = tutup; $("tutupAkun").onclick = tutup; $("latar").onclick = tutup;
+document.addEventListener("keydown", e => { if(e.key === "Escape") tutup(); });
+
+async function login(){
+  try{ await masuk(); }
+  catch(e){
+    if(e.code === "auth/popup-closed-by-user" || e.code === "auth/cancelled-popup-request") return;
+    alert(e.code === "auth/unauthorized-domain" ? "Alamat website ini belum didaftarkan di Firebase (Authentication → Settings → Authorized domains)." : "Gagal masuk: " + (e.code || e.message));
+  }
+}
+let lewati = false, authSiap = false;
+function gerbang(tampil){ $("gerbang").classList.toggle("hide", !tampil); document.body.style.overflow = tampil ? "hidden" : ""; }
+function siapkanGerbang(){ $("gMuat").classList.add("hide"); $("gMasuk").classList.remove("hide"); if(!WAJIB_LOGIN) $("gLewati").classList.remove("hide"); }
+$("gMasuk").onclick = async () => { const b = $("gMasuk"); b.disabled = true; await login(); b.disabled = false; };
+$("gLewati").onclick = () => { lewati = true; gerbang(false); };
+setTimeout(() => { if(!authSiap) siapkanGerbang(); }, 5000);
+gerbang(true);
+onAuthStateChanged(auth, u => {
+  authSiap = true; user = u;
+  if(u){ gerbang(false); } else { siapkanGerbang(); gerbang(!lewati); }
+  $("btnAkun").textContent = u ? ((u.displayName || "Akun").split(" ")[0]) : "Masuk";
+  $("kirim").textContent = u ? "Kirim pesanan" : "Masuk dengan Google untuk memesan";
+  if(u && !$("nama").value) $("nama").value = u.displayName || "";
+});
+$("btnAkun").onclick = async () => {
+  if(!user) return login();
+  $("akunInfo").innerHTML = `<p><b>${user.displayName || ""}</b><br>${user.email}</p>`;
+  $("linkAdmin").classList.toggle("hide", !isAdmin(user));
+  $("akun").classList.add("buka"); $("latar").classList.add("buka");
+  $("riwayat").innerHTML = "<p>Memuat…</p>";
+  try{
+    const sn = await batas(get(query(ref(db,"pesanan"), orderByChild("uid"), equalTo(user.uid))));
+    const rows = []; sn.forEach(d => { rows.push(d.val()); });
+    rows.sort((a,b) => (b.waktu||0) - (a.waktu||0));
+    $("riwayat").innerHTML = rows.map(o => `<div class="rw"><span class="ps ${o.status}">${o.status}</span> ${o.waktu ? new Date(o.waktu).toLocaleDateString("id-ID") : ""}<br>${Object.values(o.items||{}).map(i=>i.qty+"× "+i.name).join(", ")}<br><b>${rp(o.total)}</b></div>`).join("") || "<p>Belum ada pesanan.</p>";
+  }catch(e){ $("riwayat").innerHTML = "<p>Riwayat belum bisa dimuat.</p>"; }
+};
+$("keluar").onclick = async () => { await keluar(); tutup(); };
+
+/* kirim pesanan */
+$("kirim").onclick = async () => {
+  if(!user) return login();
+  const nama = $("nama").value.trim(), hp = $("hp").value.trim(), alamat = $("alamat").value.trim(), catatan = $("catatan").value.trim();
+  const ks = Object.keys(keranjang);
+  if(!ks.length) return alert("Pilih minimal satu item dulu.");
+  if(!nama || !hp) return alert("Isi nama dan nomor WhatsApp dulu.");
+  const items = ks.map(k => ({name: keranjang[k].n, qty: keranjang[k].q, price: keranjang[k].p}));
+  const total = items.reduce((s,i) => s + i.qty*i.price, 0);
+  const teks = `Halo Ael Bakery, saya ${nama} (${hp}).\nPesanan:\n` + items.map(i => `- ${i.name} x${i.qty} (${rp(i.price*i.qty)})`).join("\n") +
+    `\nTotal: ${rp(total)}` + (alamat ? `\nAlamat: ${alamat}` : "") + (catatan ? `\nCatatan: ${catatan}` : "");
+  const url = `https://wa.me/${WA_TOKO}?text=${encodeURIComponent(teks)}`;
+  // WhatsApp dibuka langsung saat tombol ditekan (tidak menunggu penyimpanan), supaya tidak diblokir browser
+  const win = window.open(url, "_blank");
+  const simpan = Promise.resolve(push(ref(db,"pesanan"), {uid:user.uid, email:user.email, nama, hp, alamat, catatan, items, total, status:"baru", waktu:serverTimestamp()}))
+    .catch(e => console.warn("Pesanan belum tersimpan:", e));
+  if(!win){ await Promise.race([simpan, new Promise(r => setTimeout(r, 3000))]); location.href = url; }
+  ks.forEach(k => { delete keranjang[k]; document.querySelectorAll(`[data-k="${k}"]`).forEach(e => e.innerHTML = ctlHtml(k)); });
+  render(); tutup();
+};
+
+/* ripple saat disentuh */
+document.addEventListener("pointerdown", e => {
+  const b = e.target.closest("button, .chips a");
+  if(!b || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const r = b.getBoundingClientRect(), d = Math.max(r.width, r.height) * 2;
+  const s = document.createElement("span"); s.className = "ripple";
+  s.style.cssText = `width:${d}px;height:${d}px;left:${e.clientX - r.left - d/2}px;top:${e.clientY - r.top - d/2}px`;
+  b.appendChild(s); setTimeout(() => s.remove(), 650);
+});
+render();
+</script>
+
+</body>
+</html>
